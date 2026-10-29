@@ -1,5 +1,5 @@
 import { createElement, useEffect, useRef, useState, type PointerEvent } from 'react';
-import { ArrowDown, ArrowUpRight, MoveUpRight } from 'lucide-react';
+import { ArrowDown, ArrowDownToLine, ArrowUpRight, MoveUpRight } from 'lucide-react';
 
 const experiences = [
   {
@@ -94,9 +94,9 @@ function useReveal() {
 }
 
 function MouseStudy() {
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [hasModel, setHasModel] = useState(false);
   const [modelReady, setModelReady] = useState(false);
+  const [modelError, setModelError] = useState(false);
   const stageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -104,7 +104,7 @@ function MouseStudy() {
   }, []);
 
   useEffect(() => {
-    if (!hasModel || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!hasModel || modelError || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const stage = stageRef.current;
     const viewer = stage?.querySelector<HTMLElement>('model-viewer');
@@ -120,11 +120,11 @@ function MouseStudy() {
           1,
           Math.max(0, (window.innerHeight - bounds.top) / (window.innerHeight + bounds.height)),
         );
-        const yaw = -30 + progress * 250;
-        const pitch = 58 + Math.sin(progress * Math.PI * 2) * 7;
+        const yaw = -32 + progress * 300;
+        const pitch = 54 + Math.sin(progress * Math.PI * 2) * 9;
 
         viewer.setAttribute('camera-orbit', `${yaw.toFixed(1)}deg ${pitch.toFixed(1)}deg auto`);
-        stage.style.setProperty('--mouse-parallax-y', `${((progress - 0.5) * -34).toFixed(1)}px`);
+        stage.style.setProperty('--mouse-parallax-y', `${((progress - 0.5) * -58).toFixed(1)}px`);
       });
     };
 
@@ -137,25 +137,24 @@ function MouseStudy() {
       window.removeEventListener('resize', updateFromScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [hasModel]);
+  }, [hasModel, modelError]);
 
   const move = (event: PointerEvent<HTMLDivElement>) => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientY - bounds.top) / bounds.height - 0.5) * -18;
-    const y = ((event.clientX - bounds.left) / bounds.width - 0.5) * 22;
-    setTilt({ x, y });
+    if (!hasModel || modelError || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const stage = stageRef.current;
     const viewer = stage?.querySelector<HTMLElement>('model-viewer');
     if (viewer && stage) {
+      const bounds = event.currentTarget.getBoundingClientRect();
       const stageBounds = stage.getBoundingClientRect();
       const progress = Math.min(
         1,
         Math.max(0, (window.innerHeight - stageBounds.top) / (window.innerHeight + stageBounds.height)),
       );
-      const yaw = -30 + progress * 250 + y;
-      const pitch = 58 + Math.sin(progress * Math.PI * 2) * 7 + x;
+      const pointerX = (event.clientX - bounds.left) / bounds.width - 0.5;
+      const pointerY = (event.clientY - bounds.top) / bounds.height - 0.5;
+      const yaw = -32 + progress * 300 + pointerX * 22;
+      const pitch = 54 + Math.sin(progress * Math.PI * 2) * 9 - pointerY * 14;
       viewer.setAttribute('camera-orbit', `${yaw.toFixed(1)}deg ${pitch.toFixed(1)}deg auto`);
     }
   };
@@ -164,39 +163,33 @@ function MouseStudy() {
     <div
       className="mouse-area"
       onPointerMove={move}
-      onPointerLeave={() => setTilt({ x: 0, y: 0 })}
+      role="group"
       aria-label="Interactive computer mouse study"
     >
-      <span className="mouse-label mono">A small study in interaction</span>
+      <span className="mouse-label mono">Scroll to move the model</span>
       <div className="mouse-stage" ref={stageRef}>
-        {hasModel && (
-          <img
-            className={`mouse-poster ${modelReady ? 'is-hidden' : ''}`}
-            src="/mouse-poster.png"
-            alt=""
-            aria-hidden="true"
-          />
-        )}
+        <img
+          className={`mouse-poster ${modelReady && !modelError ? 'is-hidden' : ''}`}
+          src="/mouse-poster.png"
+          alt="Low-poly computer mouse"
+          aria-hidden={hasModel && !modelError ? 'true' : undefined}
+        />
         {hasModel ? createElement('model-viewer', {
           src: '/mouse.glb',
           poster: '/mouse-poster.png',
-          alt: 'A low-poly computer mouse, responsive to pointer movement',
+          alt: 'Low-poly computer mouse that changes angle as you scroll',
           'camera-controls': true,
           'shadow-intensity': '0.7',
           exposure: '0.9',
+          'interaction-prompt': 'none',
+          style: { opacity: modelError ? 0 : 1, pointerEvents: modelError ? 'none' : 'auto' },
           'aria-label': 'Interactive 3D computer mouse',
           onLoad: () => setModelReady(true),
-          onError: () => setHasModel(false),
-        }) : (
-          <div
-            className="mouse-fallback"
-            style={{ transform: `rotateX(${57 + tilt.x}deg) rotateZ(${-30 + tilt.y}deg)` }}
-            aria-hidden="true"
-          />
-        )}
+          onError: () => setModelError(true),
+        }) : null}
       </div>
-      <span className="mono" style={{ position: 'absolute', bottom: 18, right: 22, fontSize: 8, color: '#858680' }}>
-        {hasModel ? 'Scroll to explore · drag to turn' : 'Move your pointer'}
+      <span className="mouse-hint mono">
+        {modelError || !hasModel ? '3D preview' : 'Scroll to move · drag to turn'}
       </span>
     </div>
   );
@@ -233,12 +226,18 @@ function App() {
               <div className="hero-actions reveal delay-3">
                 <a className="pill-link" href="#projects">Explore my work <ArrowDown size={14} strokeWidth={1.5} /></a>
                 <a className="text-link" href="#contact">Get in touch <ArrowUpRight size={12} style={{ marginLeft: 4 }} /></a>
+                <a className="text-link resume-link" href="/resume.pdf" download="Sreejith-S-Resume.pdf">Download résumé <ArrowDownToLine size={13} /></a>
               </div>
             </div>
-            <div className="portrait-wrap" aria-label="Portrait of Sreejith S">
-              <div className="portrait-halo" />
-              <img className="portrait" src="/sreejith.png" alt="Sreejith S" fetchPriority="high" />
-              <span className="portrait-caption mono">Building for people, one detail at a time</span>
+            <div className="hero-visual">
+              <div className="portrait-wrap" aria-label="Portrait of Sreejith S">
+                <div className="portrait-halo" />
+                <img className="portrait" src="/sreejith.png" alt="Sreejith S" fetchPriority="high" />
+                <span className="portrait-caption mono">Building for people, one detail at a time</span>
+              </div>
+              <div className="hero-mouse">
+                <MouseStudy />
+              </div>
             </div>
           </div>
           <div className="hero-index mono">
@@ -337,13 +336,10 @@ function App() {
               <div><div className="section-kicker mono">05 / Education & curiosity</div><h2 className="section-title display">Learning<br />by doing.</h2></div>
               <p className="section-note">A computer science foundation, strengthened by hands-on experience across web, mobile, backend, databases, and cloud.</p>
             </div>
-            <div className="edu-grid">
-              <div className="edu-list reveal">
-                <article className="edu-item"><div><h3>Bachelor of Technology, Computer Science</h3><p>Toms College of Engineering and Polytechnic</p></div><div className="edu-meta">2021 — 2025<br />CGPA 7.4 / 10</div></article>
-                <article className="edu-item"><div><h3>Higher Secondary Education (12th)</h3><p>N.G.P.M.H.S.S Venchempu</p></div><div className="edu-meta">2019 — 2021<br />86%</div></article>
-                <article className="edu-item"><div><h3>Secondary School Education (10th)</h3><p>N.G.P.M.H.S.S Venchempu</p></div><div className="edu-meta">2019<br />98%</div></article>
-              </div>
-              <div className="reveal delay-1"><MouseStudy /></div>
+            <div className="edu-list reveal">
+              <article className="edu-item"><div><h3>Bachelor of Technology, Computer Science</h3><p>Toms College of Engineering and Polytechnic</p></div><div className="edu-meta">2021 — 2025<br />CGPA 7.4 / 10</div></article>
+              <article className="edu-item"><div><h3>Higher Secondary Education (12th)</h3><p>N.G.P.M.H.S.S Venchempu</p></div><div className="edu-meta">2019 — 2021<br />86%</div></article>
+              <article className="edu-item"><div><h3>Secondary School Education (10th)</h3><p>N.G.P.M.H.S.S Venchempu</p></div><div className="edu-meta">2019<br />98%</div></article>
             </div>
           </div>
         </section>
@@ -360,6 +356,7 @@ function App() {
               <div className="contact-meta">
                 <a href="tel:+917902862337">+91 7902862337</a>
                 <span>Kerala, India</span>
+                <a href="/resume.pdf" download="Sreejith-S-Resume.pdf">Download résumé</a>
                 <span className="social-links">
                   <a href="https://www.linkedin.com/in/sreejith-s-943120239" target="_blank" rel="noreferrer">LinkedIn</a>
                   <a href="https://github.com/sreejithsajai01" target="_blank" rel="noreferrer">GitHub</a>
