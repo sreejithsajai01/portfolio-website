@@ -1,0 +1,110 @@
+SREEJITH S
+Software Developer | Kerala, India
++91 7902862337 | sreejiths0009@gmail.com
+LinkedIn | GitHub
+PROFESSIONAL SUMMARY
+Software Developer with 1.5 years of professional experience in full-stack web and mobile application
+development. Experienced in both frontend and backend development with a strong foundation in React.js,
+Node.js, Express.js, PostgreSQL, and React Native. Worked on ERP-based software solutions and multiple
+websites for educational institutions, contributing to application development, API integration, database
+operations, debugging, deployment, and production support. Hands-on experience with cloud platforms and
+deployment using Google Cloud Platform (GCP), Microsoft Azure, Hetzner, and Cloudflare. Strong skills in
+problem solving, leadership, communication, teamwork, and technical troubleshooting.
+EDUCATION
+Bachelor of Technology (B.Tech) in Computer Science
+Toms College of Engineering and Polytechnic
+Higher Secondary Education (12th)
+N.G.P.M.H.S.S Venchempu
+Secondary School Education (10th)
+N.G.P.M.H.S.S Venchempu
+2021– 2025
+CGPA: 7.4 / 10
+2019– 2021
+Percentage: 86%
+2019
+Percentage: 98%
+WORK EXPERIENCE
+Software Developer
+Aionpixel Technologies
+May 2026–Sep 2026
+Kerala, India
+• Developed and maintained web-based ERP applications designed for educational institutions, contributing
+to both frontend and backend components.
+• Built responsive and user-friendly interfaces using React.js, focusing on maintainability, performance, and
+usability.
+• Developed and integrated backend services and REST APIs using Node.js and Express.js to support
+application modules and business workflows.
+• Workedwith PostgreSQL for database operations, data management, queries, and application data
+integration.
+• Developed and maintained multiple school websites and education-focused web applications.
+• Contributed to the development and maintenance of an ERP-based education platform, working across
+multiple application modules.
+• Developed cross-platform mobile application features using React Native, integrating APIs and
+implementing mobile interfaces.
+• Performed application deployment and cloud-related tasks using Google Cloud Platform (GCP), Microsoft
+Azure, and Hetzner.
+• Workedwith Cloudflare for domain, DNS, and application configuration.
+• Investigated production issues, debugged application problems, and implemented fixes to improve system
+reliability.
+• Collaborated with developers, testers, and other stakeholders to implement requirements and deliver
+product improvements.
+Software Developer Trainee
+Aionpixel Technologies
+May 2025–Apr2026
+Kerala, India
+• Gained hands-on experience in full-stack application development using React.js, Node.js, Express.js,
+PostgreSQL, and REST APIs.
+• Assisted in developing and maintaining web applications and websites for educational institutions.
+• Workedonfrontend components, backend API integration, database operations, debugging, and application
+testing.
+• Developed practical knowledge of software development workflows, version control, debugging, and
+production support.
+• Assisted with cloud deployment and application configuration across GCP, Azure, and Hetzner.
+• Contributed to mobile application development using React Native for cross-platform applications.
+PROJECTS
+Education ERP Platform | React.js, Node.js, PostgreSQL, GCP, Azure
+ERP-based software platform for educational institutions
+• Contributed to an ERP-based software platform for educational institutions, supporting various
+administrative and academic workflows.
+• Developed frontend features using React.js and backend functionality using Node.js and Express.js.
+• Workedwith PostgreSQL for data storage, retrieval, database operations, and application integration.
+• Integrated and maintained REST APIs across different application modules.
+• Supported application deployment and cloud configuration using GCP, Azure, and Hetzner.
+School Websites | React.js, JavaScript, HTML, CSS
+Websites for educational institutions
+• Developed and maintained multiple responsive websites for educational institutions.
+• Implemented reusable frontend components and responsive layouts for desktop and mobile devices.
+• Integrated dynamic content and APIs where required to support school-specific functionality.
+• Workedondebugging, performance improvements, deployment, and maintenance of live websites.
+Cross-Platform Mobile Application | React Native, JavaScript, REST APIs
+Android and iOS application features
+• Developed and integrated mobile application features using React Native for cross-platform Android and
+iOS applications.
+• Integrated backend APIs and implemented application screens and user workflows.
+• WorkedonAPIconnectivity, authentication-related issues, UI improvements, debugging, and application
+builds.
+TECHNICAL SKILLS
+Languages: JavaScript, HTML5, CSS3, SQL
+Frontend: React.js, HTML, CSS, JavaScript, Responsive Web Development
+Backend: Node.js, Express.js, REST APIs
+Mobile: React Native, Cross-Platform Mobile Development
+Database: PostgreSQL
+Cloud: Google Cloud Platform (GCP), Microsoft Azure, Hetzner
+Deployment: Cloud Deployment, Server Configuration, Cloudflare, DNS
+Tools: Git, GitHub, GitLab, Visual Studio Code
+PROFESSIONAL SKILLS
+Leadership: Team collaboration, task coordination, ownership, and leadership
+Problem Solving: Debugging, troubleshooting, analytical thinking, and technical problem solving
+Communication: Technical communication, teamwork, requirement understanding, and stakeholder
+communication
+LANGUAGES
+English: Speaking, Reading, Writing
+Hindi: Speaking, Reading, Writing
+Malayalam: Speaking, Reading, Writing
+Tamil: Speaking
+ADDITIONAL INFORMATION
+• Experience working in a product-based software company focused on technology solutions for the education
+sector.
+• Hands-on experience across the development lifecycle, including development, API integration, database
+operations, debugging, deployment, and production support.
+• Experience working across web, mobile, backend, database, and cloud environments
