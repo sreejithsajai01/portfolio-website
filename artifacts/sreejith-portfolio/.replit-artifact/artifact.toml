@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Sreejith S — Portfolio"
+description = "A personal portfolio for Sreejith S, a Kerala-based software developer, showcasing his experience, selected projects, skills, and contact details through a responsive, interactive monochrome experience."
+version = "1.0.0"
+id = "artifacts/sreejith-portfolio"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19580
+
+[services.development]
+run = "pnpm --filter @workspace/sreejith-portfolio run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/sreejith-portfolio", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/sreejith-portfolio/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19580"
+BASE_PATH = "/"

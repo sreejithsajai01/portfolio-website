@@ -1,0 +1,1 @@
+- [Headless Blender rendering](headless-blender-rendering.md) — use Cycles CPU for renders here; Eevee needs a GLX context unavailable in the headless environment.
