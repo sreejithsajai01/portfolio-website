@@ -100,7 +100,7 @@ function MouseStudy() {
   const stageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    fetch('/mouse.glb', { method: 'HEAD' }).then((response) => setHasModel(response.ok)).catch(() => setHasModel(false));
+    fetch('./mouse.glb', { method: 'HEAD' }).then((response) => setHasModel(response.ok)).catch(() => setHasModel(false));
   }, []);
 
   useEffect(() => {
@@ -170,13 +170,13 @@ function MouseStudy() {
       <div className="mouse-stage" ref={stageRef}>
         <img
           className={`mouse-poster ${modelReady && !modelError ? 'is-hidden' : ''}`}
-          src="/mouse-poster.png"
+          src="./mouse-poster.png"
           alt="Low-poly computer mouse"
           aria-hidden={hasModel && !modelError ? 'true' : undefined}
         />
         {hasModel ? createElement('model-viewer', {
-          src: '/mouse.glb',
-          poster: '/mouse-poster.png',
+          src: './mouse.glb',
+          poster: './mouse-poster.png',
           alt: 'Low-poly computer mouse that changes angle as you scroll',
           'camera-controls': true,
           'shadow-intensity': '0.7',
@@ -219,20 +219,20 @@ function App() {
           <div className="shell hero-grid">
             <div className="hero-content">
               <div className="eyebrow mono reveal">Software developer · Kerala, India</div>
-              <h1 className="display reveal delay-1"><span>Sreejith</span><span><em>S.</em></span></h1>
+              <h1 className="display reveal delay-1"><span>Sreejith. <em>S</em></span></h1>
               <p className="hero-copy reveal delay-2">
                 I build thoughtful web and mobile experiences for education — from the interface to the APIs, data, and deployment behind it.
               </p>
               <div className="hero-actions reveal delay-3">
                 <a className="pill-link" href="#projects">Explore my work <ArrowDown size={14} strokeWidth={1.5} /></a>
                 <a className="text-link" href="#contact">Get in touch <ArrowUpRight size={12} style={{ marginLeft: 4 }} /></a>
-                <a className="text-link resume-link" href="/resume.pdf" download="Sreejith-S-Resume.pdf">Download résumé <ArrowDownToLine size={13} /></a>
+                <a className="text-link resume-link" href="./resume.pdf" download="Sreejith-S-Resume.pdf">Download résumé <ArrowDownToLine size={13} /></a>
               </div>
             </div>
             <div className="hero-visual">
               <div className="portrait-wrap" aria-label="Portrait of Sreejith S">
                 <div className="portrait-halo" />
-                <img className="portrait" src="/sreejith.png" alt="Sreejith S" fetchPriority="high" />
+                <img className="portrait" src="./sreejith.png" alt="Sreejith S" fetchPriority="high" />
                 <span className="portrait-caption mono">Building for people, one detail at a time</span>
               </div>
               <div className="hero-mouse">
@@ -356,7 +356,7 @@ function App() {
               <div className="contact-meta">
                 <a href="tel:+917902862337">+91 7902862337</a>
                 <span>Kerala, India</span>
-                <a href="/resume.pdf" download="Sreejith-S-Resume.pdf">Download résumé</a>
+                <a href="./resume.pdf" download="Sreejith-S-Resume.pdf">Download résumé</a>
                 <span className="social-links">
                   <a href="https://www.linkedin.com/in/sreejith-s-943120239" target="_blank" rel="noreferrer">LinkedIn</a>
                   <a href="https://github.com/sreejithsajai01" target="_blank" rel="noreferrer">GitHub</a>
