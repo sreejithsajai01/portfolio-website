@@ -1,4 +1,4 @@
-import { createElement, useEffect, useState, type PointerEvent } from 'react';
+import { createElement, useEffect, useRef, useState, type PointerEvent } from 'react';
 import { ArrowDown, ArrowUpRight, MoveUpRight } from 'lucide-react';
 
 const experiences = [
@@ -97,18 +97,67 @@ function MouseStudy() {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [hasModel, setHasModel] = useState(false);
   const [modelReady, setModelReady] = useState(false);
+  const stageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     fetch('/mouse.glb', { method: 'HEAD' }).then((response) => setHasModel(response.ok)).catch(() => setHasModel(false));
   }, []);
 
+  useEffect(() => {
+    if (!hasModel || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const stage = stageRef.current;
+    const viewer = stage?.querySelector<HTMLElement>('model-viewer');
+    if (!stage || !viewer) return;
+
+    let frame = 0;
+    const updateFromScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const bounds = stage.getBoundingClientRect();
+        const progress = Math.min(
+          1,
+          Math.max(0, (window.innerHeight - bounds.top) / (window.innerHeight + bounds.height)),
+        );
+        const yaw = -30 + progress * 250;
+        const pitch = 58 + Math.sin(progress * Math.PI * 2) * 7;
+
+        viewer.setAttribute('camera-orbit', `${yaw.toFixed(1)}deg ${pitch.toFixed(1)}deg auto`);
+        stage.style.setProperty('--mouse-parallax-y', `${((progress - 0.5) * -34).toFixed(1)}px`);
+      });
+    };
+
+    window.addEventListener('scroll', updateFromScroll, { passive: true });
+    window.addEventListener('resize', updateFromScroll);
+    updateFromScroll();
+
+    return () => {
+      window.removeEventListener('scroll', updateFromScroll);
+      window.removeEventListener('resize', updateFromScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [hasModel]);
+
   const move = (event: PointerEvent<HTMLDivElement>) => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const bounds = event.currentTarget.getBoundingClientRect();
-    setTilt({
-      x: ((event.clientY - bounds.top) / bounds.height - 0.5) * -18,
-      y: ((event.clientX - bounds.left) / bounds.width - 0.5) * 22,
-    });
+    const x = ((event.clientY - bounds.top) / bounds.height - 0.5) * -18;
+    const y = ((event.clientX - bounds.left) / bounds.width - 0.5) * 22;
+    setTilt({ x, y });
+
+    const stage = stageRef.current;
+    const viewer = stage?.querySelector<HTMLElement>('model-viewer');
+    if (viewer && stage) {
+      const stageBounds = stage.getBoundingClientRect();
+      const progress = Math.min(
+        1,
+        Math.max(0, (window.innerHeight - stageBounds.top) / (window.innerHeight + stageBounds.height)),
+      );
+      const yaw = -30 + progress * 250 + y;
+      const pitch = 58 + Math.sin(progress * Math.PI * 2) * 7 + x;
+      viewer.setAttribute('camera-orbit', `${yaw.toFixed(1)}deg ${pitch.toFixed(1)}deg auto`);
+    }
   };
 
   return (
@@ -119,7 +168,7 @@ function MouseStudy() {
       aria-label="Interactive computer mouse study"
     >
       <span className="mouse-label mono">A small study in interaction</span>
-      <div className="mouse-stage">
+      <div className="mouse-stage" ref={stageRef}>
         {hasModel && (
           <img
             className={`mouse-poster ${modelReady ? 'is-hidden' : ''}`}
@@ -133,8 +182,6 @@ function MouseStudy() {
           poster: '/mouse-poster.png',
           alt: 'A low-poly computer mouse, responsive to pointer movement',
           'camera-controls': true,
-          'auto-rotate': true,
-          'rotation-per-second': '12deg',
           'shadow-intensity': '0.7',
           exposure: '0.9',
           'aria-label': 'Interactive 3D computer mouse',
@@ -149,7 +196,7 @@ function MouseStudy() {
         )}
       </div>
       <span className="mono" style={{ position: 'absolute', bottom: 18, right: 22, fontSize: 8, color: '#858680' }}>
-        {hasModel ? 'Drag to explore' : 'Move your pointer'}
+        {hasModel ? 'Scroll to explore · drag to turn' : 'Move your pointer'}
       </span>
     </div>
   );
@@ -161,7 +208,7 @@ function App() {
     <>
       <div className="page-grain" aria-hidden="true" />
       <header className="topbar">
-        <nav className="shell nav-inner" aria-label="Main navigation">
+        <nav className="nav-inner" aria-label="Main navigation">
           <a href="#home" className="brand">SREEJITH S<span style={{ color: '#8d8e88' }}>.</span></a>
           <div className="nav-links">
             <a href="#about">About</a>
@@ -313,7 +360,10 @@ function App() {
               <div className="contact-meta">
                 <a href="tel:+917902862337">+91 7902862337</a>
                 <span>Kerala, India</span>
-                <span>LinkedIn · GitHub</span>
+                <span className="social-links">
+                  <a href="https://www.linkedin.com/in/sreejith-s-943120239" target="_blank" rel="noreferrer">LinkedIn</a>
+                  <a href="https://github.com/sreejithsajai01" target="_blank" rel="noreferrer">GitHub</a>
+                </span>
               </div>
             </div>
             <footer className="footer">
