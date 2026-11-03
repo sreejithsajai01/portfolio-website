@@ -93,11 +93,81 @@ function useReveal() {
   }, []);
 }
 
+function CursorLight() {
+  const [coords, setCoords] = useState({ x: -400, y: -400 });
+  const [isMoving, setIsMoving] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const timerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    let animId: number;
+    let targetX = -400;
+    let targetY = -400;
+    let currX = -400;
+    let currY = -400;
+
+    const onPointerMove = (e: globalThis.PointerEvent) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      setIsVisible(true);
+      setIsMoving(true);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = window.setTimeout(() => {
+        setIsMoving(false);
+      }, 160);
+    };
+
+    const onPointerLeave = () => {
+      setIsVisible(false);
+      setIsMoving(false);
+    };
+
+    const loop = () => {
+      currX += (targetX - currX) * 0.18;
+      currY += (targetY - currY) * 0.18;
+      setCoords({ x: currX, y: currY });
+      animId = requestAnimationFrame(loop);
+    };
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    document.addEventListener('mouseleave', onPointerLeave);
+    animId = requestAnimationFrame(loop);
+
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('mouseleave', onPointerLeave);
+      cancelAnimationFrame(animId);
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  if (!isVisible) return null;
+
+  return (
+    <div
+      className={`cursor-spotlight-wrap ${isMoving ? 'is-moving' : ''}`}
+      style={{
+        transform: `translate3d(${coords.x}px, ${coords.y}px, 0)`,
+      }}
+      aria-hidden="true"
+    >
+      <div className="cursor-spotlight-core" />
+      <div className="cursor-spotlight-carousel" />
+    </div>
+  );
+}
+
 function MouseStudy() {
   const [hasModel, setHasModel] = useState(false);
   const [modelReady, setModelReady] = useState(false);
   const [modelError, setModelError] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isMoving, setIsMoving] = useState(false);
   const stageRef = useRef<HTMLDivElement | null>(null);
+  const areaRef = useRef<HTMLDivElement | null>(null);
+  const moveTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     fetch('./mouse.glb', { method: 'HEAD' }).then((response) => setHasModel(response.ok)).catch(() => setHasModel(false));
@@ -140,6 +210,25 @@ function MouseStudy() {
   }, [hasModel, modelError]);
 
   const move = (event: PointerEvent<HTMLDivElement>) => {
+    setIsMoving(true);
+    if (moveTimerRef.current) clearTimeout(moveTimerRef.current);
+    moveTimerRef.current = window.setTimeout(() => {
+      setIsMoving(false);
+    }, 180);
+
+    const area = areaRef.current;
+    if (area) {
+      const rect = area.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const xPercent = (x / rect.width) * 100;
+      const yPercent = (y / rect.height) * 100;
+      const angle = Math.atan2(y - rect.height / 2, x - rect.width / 2) * (180 / Math.PI);
+      area.style.setProperty('--mouse-light-x', `${xPercent.toFixed(1)}%`);
+      area.style.setProperty('--mouse-light-y', `${yPercent.toFixed(1)}%`);
+      area.style.setProperty('--mouse-angle', `${angle.toFixed(1)}deg`);
+    }
+
     if (!hasModel || modelError || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const stage = stageRef.current;
@@ -161,11 +250,20 @@ function MouseStudy() {
 
   return (
     <div
-      className="mouse-area"
+      className={`mouse-area ${isMoving ? 'is-moving' : ''} ${isHovered ? 'is-hovered' : ''}`}
+      ref={areaRef}
       onPointerMove={move}
+      onPointerEnter={() => setIsHovered(true)}
+      onPointerLeave={() => {
+        setIsHovered(false);
+        setIsMoving(false);
+      }}
       role="group"
       aria-label="Interactive computer mouse study"
     >
+      <div className="carousel-light-ring" aria-hidden="true" />
+      <div className="carousel-light-beam" aria-hidden="true" />
+      <div className="carousel-light-flare" aria-hidden="true" />
       <span className="mouse-label mono">Scroll to move the model</span>
       <div className="mouse-stage" ref={stageRef}>
         <img
@@ -199,10 +297,11 @@ function App() {
   useReveal();
   return (
     <>
+      <CursorLight />
       <div className="page-grain" aria-hidden="true" />
       <header className="topbar">
         <nav className="nav-inner" aria-label="Main navigation">
-          <a href="#home" className="brand">SREEJITH S<span style={{ color: '#8d8e88' }}>.</span></a>
+          <a href="#home" className="brand">Sreejith. S</a>
           <div className="nav-links">
             <a href="#about">About</a>
             <a href="#experience">Experience</a>
@@ -364,7 +463,7 @@ function App() {
               </div>
             </div>
             <footer className="footer">
-              <span>Sreejith S · Software Developer</span>
+              <span>Sreejith. S · Software Developer</span>
               <span>Made with care, in Kerala</span>
               <a href="#home">Back to top ↑</a>
             </footer>
